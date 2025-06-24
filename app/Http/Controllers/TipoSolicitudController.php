@@ -13,6 +13,7 @@ class TipoSolicitudController extends Controller
     public function index()
     {
         //
+        return response()->json(['tipos'=>Tipo_solicitud::get()]);
     }
 
     /**

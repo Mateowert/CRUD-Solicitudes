@@ -12,6 +12,12 @@ use App\Http\Resources\TrabajadoresResource;
 
 class SolicitudController extends Controller
 {
+    protected $solicitud;
+
+    public function __construct(Solicitud $solicitud){
+        $this->solicitud = $solicitud;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -19,8 +25,10 @@ class SolicitudController extends Controller
     {
         //
 
+        $solicitudes = $this->solicitud->getSolicitudes();;
+
         return Inertia::render('Solicitudes/IndexSolicitudes', [
-            'departamentos' => Departamentos::get(),
+            'solicitudes' => $solicitudes,
         ]);
     }
 

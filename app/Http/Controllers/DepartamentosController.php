@@ -13,6 +13,7 @@ class DepartamentosController extends Controller
     public function index()
     {
         //
+        return response()->json(['departamentos'=>Departamentos::get()]);
     }
 
     /**

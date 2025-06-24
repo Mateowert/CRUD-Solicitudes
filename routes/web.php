@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DepartamentosController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -7,8 +8,12 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\DepartamentosTrabajadoresController;
+use App\Http\Controllers\TipoSolicitudController;
 
 Route::resource('solicitud', SolicitudController::class);
+
+Route::get('api/getDepartamentos', [DepartamentosController::class, 'index'])->name('departamentos.index');
+Route::get('api/getTipos', [TipoSolicitudController::class, 'index'])->name('tipo_solicitud.index');
 
 Route::get('/api/getTrabajadoresDepartamento/{id_departamento}', [DepartamentosTrabajadoresController::class, 'filter'])->name('trabajadores.departamento');
 

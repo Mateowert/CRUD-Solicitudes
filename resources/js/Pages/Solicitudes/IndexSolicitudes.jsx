@@ -33,27 +33,8 @@ import { Button } from "@/components/ui/button"
 
 import { Solicitud } from "@/Components/Solicitud"
 
-const IndexSolicitudes = ({departamentos}) => {
-    const prueba = [
-        {
-            id: 1,
-            'Solicitante': 'Norma Natalia',
-            'Solicitado': 'Centro de Còmputo',
-            'Fecha_elaboracion': '12/4/23'
-        },
-        {
-            id: 2,
-            'Solicitante': 'Asereje Jimenez',
-            'Solicitado': 'Mantenimiento',
-            'Fecha_elaboracion': '12/4/23'
-        },
-        {
-            id: 3,
-            'Solicitante': 'Nose Luna',
-            'Solicitado': 'Recursos',
-            'Fecha_elaboracion': '12/4/23'
-        },
-    ]
+const IndexSolicitudes = ({ solicitudes }) => {
+    console.log(solicitudes)
 
     return (
         <>
@@ -72,7 +53,7 @@ const IndexSolicitudes = ({departamentos}) => {
                             <DialogDescription>
                                 Crea una nueva solicitud
                             </DialogDescription>
-                            <Solicitud type='create' departamentos={departamentos}/>
+                            <Solicitud type='create'/>
                         </DialogContent>
                     </Dialog>
                 </div>
@@ -83,17 +64,19 @@ const IndexSolicitudes = ({departamentos}) => {
                         <TableRow>
                             <TableHead>Solicitado</TableHead>
                             <TableHead>Solicitante</TableHead>
+                            <TableHead>Nombre Solicitante</TableHead>
                             <TableHead className="w-[200px]">Fecha de Elaboración</TableHead>
                             <TableHead className="w-[300px]">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {
-                            prueba.map((item) => {
+                            solicitudes.map((item) => {
                                 return <TableRow key={item.id}>
-                                    <TableCell className="font-medium">{item.Solicitante}</TableCell>
-                                    <TableCell className="font-medium">{item.Solicitado}</TableCell>
-                                    <TableCell className="font-medium">{item.Fecha_elaboracion}</TableCell>
+                                    <TableCell className="font-medium">{item.solicitado}</TableCell>
+                                    <TableCell className="font-medium">{item.solicitante}</TableCell>
+                                    <TableCell className="font-medium">{item.nombre}</TableCell>
+                                    <TableCell className="font-medium">{item.fecha_elaboracion}</TableCell>
                                     <TableCell className="font-medium">
                                         <Dialog>
                                             <DialogTrigger asChild>
@@ -106,7 +89,7 @@ const IndexSolicitudes = ({departamentos}) => {
                                                 <DialogDescription>
                                                     Ver el contenido de una solicitud
                                                 </DialogDescription>
-                                                <Solicitud type='view' departamentos={departamentos}/>
+                                                <Solicitud type='view' />
                                             </DialogContent>
                                         </Dialog>
                                         <Dialog>
@@ -120,7 +103,7 @@ const IndexSolicitudes = ({departamentos}) => {
                                                 <DialogDescription>
                                                     Editar el contenido de una solicitud
                                                 </DialogDescription>
-                                                <Solicitud type='edit' departamentos={departamentos}/>
+                                                <Solicitud type='edit' idSolicitud={item.id}/>
                                             </DialogContent>
                                         </Dialog>
 
