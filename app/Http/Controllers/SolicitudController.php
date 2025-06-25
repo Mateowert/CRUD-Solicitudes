@@ -72,9 +72,11 @@ class SolicitudController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Solicitud $solicitud)
+    public function update(Request $request, $id_solicitud)
     {
         //
+        $this->solicitud->updateSolicitud($request, $id_solicitud);
+        return redirect()->route('solicitud.index');
     }
 
     /**

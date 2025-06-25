@@ -53,17 +53,21 @@ class Solicitud extends Model
 	        ?,
 	        ?, 
 	        ?,
-	        2012-05-05,
-	        2012-05-05
+	        ?,
+	        ?
 	        )
         ";
+
+        //dd($request->all());
         return DB::insert($query, [
             $request->fk_id_solicitante,
             $request->fk_id_trabajador,
             $request->fk_id_solicitado,
             $request->fk_id_tipo,
             $request->descripcion,
-            $request->folio
+            $request->folio,
+            $request->fecha_revision,
+            $request->fecha_elaboracion,
         ]);
     }
 
@@ -83,5 +87,33 @@ class Solicitud extends Model
             where s.id = ?
         ";
         return DB::select($query, [$id_solicitud])[0];
+    }
+
+    public function updateSolicitud($request, $id_solicitud){
+        $query = "
+            update solicituds
+	        set FK_Departamento_solicitante = (
+		        select id from departamentos__trabajadores dt 
+			        where dt.FK_Departamento = ? and dt.FK_Trabajador = ?
+		        ),
+	            FK_Departamento_solicitado = ?,
+	            FK_Tipo_solicitud = ?,
+	            folio = ?,
+	            descripcion = ?,
+	            fecha_elaboracion = ?,
+	            fecha_revision = ?
+	        where id= ?
+        ";
+        return DB::update($query, [
+            $request->fk_id_solicitante,
+            $request->fk_id_trabajador,
+            $request->fk_id_solicitado,
+            $request->fk_id_tipo,
+            $request->folio,
+            $request->descripcion,
+            $request->fecha_elaboracion,
+            $request->fecha_revision,
+            $id_solicitud
+        ]);
     }
 }

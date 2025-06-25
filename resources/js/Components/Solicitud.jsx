@@ -9,16 +9,6 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,8 +20,8 @@ export const Solicitud = ({ type, id_solicitud }) => {
         fk_id_trabajador: "",
         fk_id_solicitante: "",
         fk_id_solicitado: "",
-        fecha_elaboracion: null,
-        fecha_revision: null,
+        fecha_elaboracion: "",
+        fecha_revision: "",
         folio: "",
         descripcion: "",
         fk_id_tipo: "",
@@ -40,34 +30,17 @@ export const Solicitud = ({ type, id_solicitud }) => {
     //tipo: codigo y norma
     const [tipos, setTipos] = useState([]);
 
-    // fechas cambiar por funciones y mover directamente al form -----------------------------------Cambiar el componente date
-    const [date_e, setDate_e] = useState("");
-    useEffect(() => {
-        setData("fecha_elaboracion", date_e.toString);
-    }, [date_e]);
-    const [date_r, setDate_r] = useState("");
-    useEffect(() => {
-        setData("fecha_revision", date_r.toString);
-    }, [date_r]);
-
     //trabajadores del departamento
     const [trabajadores, setTrabajadores] = useState([]);
 
     //consulta a todos los departamentos
     const [departamentos, setDepartamentos] = useState([]);
 
-    const [solicitud, setSolicitud] = useState([])
+    const [solicitud, setSolicitud] = useState([]);
 
     //seteo general
     useEffect(() => {
         fetchData();
-        setSolicitables(departamentos.filter((d) => d.solicitable === 1));
-        setSolicitantes(departamentos);
-
-        
-        if(id_solicitud){
-            fetchSolicitud();
-        }
     }, []);
 
     //departamentos solicitantes y solicitables
@@ -82,7 +55,7 @@ export const Solicitud = ({ type, id_solicitud }) => {
         }
 
         if (data.fk_id_solicitante) fetchTrabajadores();
-        setData("fk_id_trabajador", "");
+        if (type != "view") setData("fk_id_trabajador", "");
     }, [data.fk_id_solicitante]);
 
     useEffect(() => {
@@ -99,6 +72,9 @@ export const Solicitud = ({ type, id_solicitud }) => {
             );
             const { dataTrabajadores } = await response.json();
             setTrabajadores(dataTrabajadores);
+
+            if (id_solicitud)
+                setData("fk_id_trabajador", solicitud.FK_Trabajador);
         } catch (error) {
             console.log("error", error);
         }
@@ -114,6 +90,13 @@ export const Solicitud = ({ type, id_solicitud }) => {
             const responseTipos = await fetch("/api/getTipos");
             const { tipos } = await responseTipos.json();
             setTipos(tipos);
+
+            setSolicitables(departamentos.filter((d) => d.solicitable === 1));
+            setSolicitantes(departamentos);
+
+            if (id_solicitud) {
+                fetchSolicitud();
+            }
         } catch (error) {
             console.log("error", error);
         }
@@ -122,40 +105,43 @@ export const Solicitud = ({ type, id_solicitud }) => {
     const fetchSolicitud = async () => {
         if (!id_solicitud) return;
         try {
-            const response = await fetch(
-                `solicitud/${id_solicitud}`
-            );
+            const response = await fetch(`solicitud/${id_solicitud}`);
             const { solicitud } = await response.json();
-            setSolicitud(solicitud)
+            setSolicitud(solicitud);
 
-            setData("fk_id_solicitante", solicitud.FK_Departamento)
-            setData("fk_id_solicitado", solicitud.FK_Departamento_solicitado)
-            //fetchTrabajadores()
-            //setData("fk_id_trabajador", solicitud.FK_Trabajador)
-            setData("folio", solicitud.folio)
-            setData("descripcion", solicitud.descripcion)
+            setData("fk_id_solicitante", solicitud.FK_Departamento);
+            setData("fk_id_solicitado", solicitud.FK_Departamento_solicitado);
+            setData("folio", solicitud.folio);
+            setData("descripcion", solicitud.descripcion);
+            setData("fk_id_tipo", solicitud.FK_Tipo_solicitud);
+            setData("fecha_elaboracion", solicitud.fecha_elaboracion);
+            setData("fecha_revision", solicitud.fecha_revision);
         } catch (error) {
             console.log("error", error);
         }
-    }
+    };
 
     function handleSubmit(e) {
         e.preventDefault();
 
         if (type == "edit" && id_solicitud) {
-            alert("estas en el edit");
-            alert(id_solicitud);
+            patch(route("solicitud.update", id_solicitud), {
+                onSuccess: () => {
+                    reset();
+                },
+                onFinish: () => console.log("si se actualizo"),
+            });
             return;
         }
 
-        console.log(data);
         post(route("solicitud.store"), {
             onSuccess: () => {
-                console.log("piola");
+                reset();
+                console.log("se guardo");
             },
             onError: () => {
-                console.log("algo trono")
-            }
+                console.log("algo trono guardando");
+            },
         });
     }
 
@@ -163,12 +149,14 @@ export const Solicitud = ({ type, id_solicitud }) => {
         <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 gap-2">
                 <div className="">
-                    <Label htmlFor="select_solicitante">Area Solicitante</Label>
+                    <Label htmlFor={"select_solicitante"}>
+                        Area Solicitante
+                    </Label>
                     <Select
                         id="select_solicitante"
                         value={data.fk_id_solicitante}
                         onValueChange={(e) => setData("fk_id_solicitante", e)}
-                        disabled={solicitantes.length == 0 | type=='view'}
+                        disabled={(solicitantes.length == 0) | (type == "view")}
                     >
                         <SelectTrigger>
                             <SelectValue placeholder="Solicitante" />
@@ -187,12 +175,12 @@ export const Solicitud = ({ type, id_solicitud }) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="select_solicitado">Area Solicitada</Label>
+                    <Label htmlFor={"select_solicitado"}>Area Solicitada</Label>
                     <Select
                         id="select_solicitado"
                         value={data.fk_id_solicitado}
                         onValueChange={(e) => setData("fk_id_solicitado", e)}
-                        disabled={!solicitables.length | type=='view'}
+                        disabled={!solicitables.length || type == "view"}
                     >
                         <SelectTrigger>
                             <SelectValue placeholder="Solicitado" />
@@ -213,12 +201,12 @@ export const Solicitud = ({ type, id_solicitud }) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="select_trabajador">Trabajador</Label>
+                    <Label htmlFor={"select_trabajador"}>Trabajador</Label>
                     <Select
                         id="select_trabajador"
                         value={data.fk_id_trabajador}
                         onValueChange={(e) => setData("fk_id_trabajador", e)}
-                        disabled={!trabajadores.length}
+                        disabled={!trabajadores.length || type == "view"}
                     >
                         <SelectTrigger>
                             <SelectValue placeholder="Trabajador" />
@@ -239,22 +227,23 @@ export const Solicitud = ({ type, id_solicitud }) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="">Folio</Label>
+                    <Label htmlFor={"folio"}>Folio</Label>
                     <Input
+                        id="folio"
                         placeholder="Folio"
                         value={data.folio}
                         onChange={(e) => setData("folio", e.target.value)}
-                        disabled={type=='view'}
+                        disabled={type == "view"}
                     />
                 </div>
 
                 <div>
-                    <Label htmlFor="">Codigo y Norma</Label>
+                    <Label htmlFor={"select_norma"}>Codigo y Norma</Label>
                     <Select
                         id="select_norma"
                         value={data.fk_id_tipo}
                         onValueChange={(e) => setData("fk_id_tipo", e)}
-                        disabled={!tipos.length | type=='view'}
+                        disabled={!tipos.length | (type == "view")}
                     >
                         <SelectTrigger>
                             <SelectValue placeholder="Codigo y Norma" />
@@ -275,69 +264,45 @@ export const Solicitud = ({ type, id_solicitud }) => {
                 </div>
 
                 <div>
-                    <Label className="mr-4">Fecha de Elaboración:</Label>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant="outline"
-                                data-empty={!date_e}
-                                className="data-[empty=true]:text-muted-foreground w-[280px] justify-start text-left font-normal"
-                            >
-                                <CalendarIcon />
-                                {date_e ? (
-                                    format(date_e, "PPP")
-                                ) : (
-                                    <span>Pick a date</span>
-                                )}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                            <Calendar
-                                mode="single"
-                                selected={date_e}
-                                onSelect={setDate_e}
-                            />
-                        </PopoverContent>
-                    </Popover>
+                    <Label htmlFor={"fecha_elaboracion"} className="mr-4">
+                        Fecha de Elaboración:
+                    </Label>
+                    <Input
+                        id="fecha_elaboracion"
+                        type="date"
+                        value={data.fecha_elaboracion}
+                        onChange={(e) =>
+                            setData("fecha_elaboracion", e.target.value)
+                        }
+                        disabled={type == "view"}
+                    />
                 </div>
 
                 <div>
-                    <Label className="mr-4">Fecha de Revisión:</Label>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant="outline"
-                                data-empty={!date_r}
-                                className="data-[empty=true]:text-muted-foreground w-[280px] justify-start text-left font-normal"
-                            >
-                                <CalendarIcon />
-                                {date_r ? (
-                                    format(date_r, "PPP")
-                                ) : (
-                                    <span>Pick a date</span>
-                                )}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                            <Calendar
-                                mode="single"
-                                selected={date_r}
-                                onSelect={setDate_r}
-                            />
-                        </PopoverContent>
-                    </Popover>
+                    <Label htmlFor={"fecha_revision"} className="mr-4">
+                        Fecha de Revisión:
+                    </Label>
+                    <Input
+                        id="fecha_revision"
+                        type="date"
+                        value={data.fecha_revision}
+                        onChange={(e) =>
+                            setData("fecha_revision", e.target.value)
+                        }
+                        disabled={type == "view"}
+                    />
                 </div>
-            </div>
 
-            <div>
-                <Label htmlFor="">Descripción</Label>
-                <Textarea
-                    placeholder="Descripción del servicio solicitado o falla a reparar:"
-                    value={data.descripcion}
-                    onChange={(e) => setData("descripcion", e.target.value)}
-
-                    disabled={type=='view'}
-                />
+                <div>
+                    <Label htmlFor="descripcion">Descripción</Label>
+                    <Textarea
+                        id="descripcion"
+                        placeholder="Descripción del servicio solicitado o falla a reparar:"
+                        value={data.descripcion}
+                        onChange={(e) => setData("descripcion", e.target.value)}
+                        disabled={type == "view"}
+                    />
+                </div>
             </div>
 
             {type != "view" && (
