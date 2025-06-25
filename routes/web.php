@@ -12,8 +12,8 @@ use App\Http\Controllers\TipoSolicitudController;
 
 Route::resource('solicitud', SolicitudController::class);
 
-Route::get('api/getDepartamentos', [DepartamentosController::class, 'index'])->name('departamentos.index');
-Route::get('api/getTipos', [TipoSolicitudController::class, 'index'])->name('tipo_solicitud.index');
+Route::get('api/getDepartamentos', [DepartamentosController::class, 'index']);
+Route::get('api/getTipos', [TipoSolicitudController::class, 'index']);
 
 Route::get('/api/getTrabajadoresDepartamento/{id_departamento}', [DepartamentosTrabajadoresController::class, 'filter'])->name('trabajadores.departamento');
 

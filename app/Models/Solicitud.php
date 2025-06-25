@@ -17,14 +17,14 @@ class Solicitud extends Model
 	   s.fecha_elaboracion,
        s.id 
 	   FROM solicituds s
-	INNER JOIN departamentos d1 
-    	ON s.FK_Departamento_solicitado  = d1.id
-	INNER JOIN departamentos__trabajadores dt 
-    	ON s.FK_Departamento_solicitante = dt.id
-	INNER JOIN departamentos d2 
-    	ON dt.FK_Departamento = d2.id
-    INNER JOIN trabajadores t 
-    	on dt.FK_Trabajador = t.id";
+        INNER JOIN departamentos d1 
+    	    ON s.FK_Departamento_solicitado  = d1.id
+	    INNER JOIN departamentos__trabajadores dt 
+    	    ON s.FK_Departamento_solicitante = dt.id
+	    INNER JOIN departamentos d2 
+    	    ON dt.FK_Departamento = d2.id
+        INNER JOIN trabajadores t 
+    	    ON dt.FK_Trabajador = t.id";
         $solicitudes = DB::select($query);
 
         if (count($solicitudes) > 0) {
@@ -32,5 +32,56 @@ class Solicitud extends Model
         } else {
             return [];
         }
+    }
+
+    public function storeSolicitud($request)
+    {
+        $query = "
+        INSERT INTO solicituds
+	        (FK_Departamento_solicitante, 
+	        FK_Departamento_solicitado, 
+	        FK_Tipo_solicitud ,
+	        descripcion, 
+	        folio,
+	        fecha_revision,
+	        fecha_elaboracion)
+	    VALUES 
+	        (
+            (select id from departamentos__trabajadores
+	            where FK_Departamento = ? and FK_Trabajador = ?), 
+	        ?, 
+	        ?,
+	        ?, 
+	        ?,
+	        2012-05-05,
+	        2012-05-05
+	        )
+        ";
+        return DB::insert($query, [
+            $request->fk_id_solicitante,
+            $request->fk_id_trabajador,
+            $request->fk_id_solicitado,
+            $request->fk_id_tipo,
+            $request->descripcion,
+            $request->folio
+        ]);
+    }
+
+    public function getSolicitud($id_solicitud) {
+        $query = "
+        select dt.FK_Departamento,
+            s.FK_Departamento_solicitado,
+            dt.FK_Trabajador,
+            s.folio,
+            s.FK_Tipo_solicitud,
+            s.fecha_elaboracion,
+            s.fecha_revision,
+            s.descripcion
+            from solicituds s
+            inner join departamentos__trabajadores dt 
+                on s.FK_Departamento_solicitante = dt.id
+            where s.id = ?
+        ";
+        return DB::select($query, [$id_solicitud])[0];
     }
 }

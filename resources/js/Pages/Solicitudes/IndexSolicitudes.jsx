@@ -33,9 +33,9 @@ import { Button } from "@/components/ui/button"
 
 import { Solicitud } from "@/Components/Solicitud"
 
-const IndexSolicitudes = ({ solicitudes }) => {
-    console.log(solicitudes)
+import { Link } from '@inertiajs/react';
 
+const IndexSolicitudes = ({ solicitudes }) => {
     return (
         <>
             <h1 className="text-center text-4xl font-extrabold text-blue-600 mt-8 mb-4">Solicitudes</h1>
@@ -89,7 +89,7 @@ const IndexSolicitudes = ({ solicitudes }) => {
                                                 <DialogDescription>
                                                     Ver el contenido de una solicitud
                                                 </DialogDescription>
-                                                <Solicitud type='view' />
+                                                <Solicitud type='view' id_solicitud={item.id}/>
                                             </DialogContent>
                                         </Dialog>
                                         <Dialog>
@@ -103,7 +103,7 @@ const IndexSolicitudes = ({ solicitudes }) => {
                                                 <DialogDescription>
                                                     Editar el contenido de una solicitud
                                                 </DialogDescription>
-                                                <Solicitud type='edit' idSolicitud={item.id}/>
+                                                <Solicitud type='edit' id_solicitud={item.id}/>
                                             </DialogContent>
                                         </Dialog>
 
@@ -122,8 +122,8 @@ const IndexSolicitudes = ({ solicitudes }) => {
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
                                                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                    <AlertDialogAction>
-                                                        <a href="#">Confirmar</a>
+                                                    <AlertDialogAction asChild>
+                                                        <Link href={route('solicitud.destroy', item.id)} method="delete">Confirmar</Link>
                                                     </AlertDialogAction>
                                                 </AlertDialogFooter>
                                             </AlertDialogContent>

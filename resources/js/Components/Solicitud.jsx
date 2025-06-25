@@ -25,7 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 import PrimaryButton from "@/Components/PrimaryButton";
 
-export const Solicitud = ({ type }) => {
+export const Solicitud = ({ type, id_solicitud }) => {
     const { data, setData, post, reset, errors, patch } = useForm({
         fk_id_trabajador: "",
         fk_id_solicitante: "",
@@ -40,7 +40,7 @@ export const Solicitud = ({ type }) => {
     //tipo: codigo y norma
     const [tipos, setTipos] = useState([]);
 
-    // fechas cambiar por funciones y mover directamente al form
+    // fechas cambiar por funciones y mover directamente al form -----------------------------------Cambiar el componente date
     const [date_e, setDate_e] = useState("");
     useEffect(() => {
         setData("fecha_elaboracion", date_e.toString);
@@ -50,27 +50,33 @@ export const Solicitud = ({ type }) => {
         setData("fecha_revision", date_r.toString);
     }, [date_r]);
 
+    //trabajadores del departamento
     const [trabajadores, setTrabajadores] = useState([]);
 
+    //consulta a todos los departamentos
     const [departamentos, setDepartamentos] = useState([]);
 
+    const [solicitud, setSolicitud] = useState([])
+
+    //seteo general
     useEffect(() => {
         fetchData();
         setSolicitables(departamentos.filter((d) => d.solicitable === 1));
         setSolicitantes(departamentos);
-    }, [departamentos]);
 
+        
+        if(id_solicitud){
+            fetchSolicitud();
+        }
+    }, []);
+
+    //departamentos solicitantes y solicitables
     const [solicitables, setSolicitables] = useState(
         departamentos.filter((d) => d.solicitable === 1)
     );
     const [solicitantes, setSolicitantes] = useState(departamentos);
 
     useEffect(() => {
-        setSolicitables(
-            departamentos.filter(
-                (d) => d.id != data.fk_id_solicitante && d.solicitable === 1
-            )
-        );
         if (data.fk_id_solicitado === data.fk_id_solicitante) {
             setData("fk_id_solicitado", "");
         }
@@ -80,9 +86,6 @@ export const Solicitud = ({ type }) => {
     }, [data.fk_id_solicitante]);
 
     useEffect(() => {
-        setSolicitantes(
-            departamentos.filter((d) => d.id != data.fk_id_solicitado)
-        );
         if (data.fk_id_solicitado === data.fk_id_solicitante) {
             setData("fk_id_solicitante", "");
         }
@@ -116,20 +119,56 @@ export const Solicitud = ({ type }) => {
         }
     };
 
+    const fetchSolicitud = async () => {
+        if (!id_solicitud) return;
+        try {
+            const response = await fetch(
+                `solicitud/${id_solicitud}`
+            );
+            const { solicitud } = await response.json();
+            setSolicitud(solicitud)
+
+            setData("fk_id_solicitante", solicitud.FK_Departamento)
+            setData("fk_id_solicitado", solicitud.FK_Departamento_solicitado)
+            //fetchTrabajadores()
+            //setData("fk_id_trabajador", solicitud.FK_Trabajador)
+            setData("folio", solicitud.folio)
+            setData("descripcion", solicitud.descripcion)
+        } catch (error) {
+            console.log("error", error);
+        }
+    }
+
     function handleSubmit(e) {
         e.preventDefault();
-        console.log(e);
+
+        if (type == "edit" && id_solicitud) {
+            alert("estas en el edit");
+            alert(id_solicitud);
+            return;
+        }
+
+        console.log(data);
+        post(route("solicitud.store"), {
+            onSuccess: () => {
+                console.log("piola");
+            },
+            onError: () => {
+                console.log("algo trono")
+            }
+        });
     }
 
     return (
         <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 gap-2">
                 <div className="">
-                    <Label htmlFor="">Area Solicitante</Label>
+                    <Label htmlFor="select_solicitante">Area Solicitante</Label>
                     <Select
+                        id="select_solicitante"
                         value={data.fk_id_solicitante}
                         onValueChange={(e) => setData("fk_id_solicitante", e)}
-                        disabled={solicitantes.length == 0}
+                        disabled={solicitantes.length == 0 | type=='view'}
                     >
                         <SelectTrigger>
                             <SelectValue placeholder="Solicitante" />
@@ -148,11 +187,12 @@ export const Solicitud = ({ type }) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="">Area Solicitada</Label>
+                    <Label htmlFor="select_solicitado">Area Solicitada</Label>
                     <Select
+                        id="select_solicitado"
                         value={data.fk_id_solicitado}
                         onValueChange={(e) => setData("fk_id_solicitado", e)}
-                        disabled={!solicitables.length}
+                        disabled={!solicitables.length | type=='view'}
                     >
                         <SelectTrigger>
                             <SelectValue placeholder="Solicitado" />
@@ -173,8 +213,9 @@ export const Solicitud = ({ type }) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="">Trabajador</Label>
+                    <Label htmlFor="select_trabajador">Trabajador</Label>
                     <Select
+                        id="select_trabajador"
                         value={data.fk_id_trabajador}
                         onValueChange={(e) => setData("fk_id_trabajador", e)}
                         disabled={!trabajadores.length}
@@ -199,15 +240,21 @@ export const Solicitud = ({ type }) => {
 
                 <div>
                     <Label htmlFor="">Folio</Label>
-                    <Input placeholder="Folio" />
+                    <Input
+                        placeholder="Folio"
+                        value={data.folio}
+                        onChange={(e) => setData("folio", e.target.value)}
+                        disabled={type=='view'}
+                    />
                 </div>
 
                 <div>
                     <Label htmlFor="">Codigo y Norma</Label>
                     <Select
+                        id="select_norma"
                         value={data.fk_id_tipo}
                         onValueChange={(e) => setData("fk_id_tipo", e)}
-                        disabled={!tipos.length}
+                        disabled={!tipos.length | type=='view'}
                     >
                         <SelectTrigger>
                             <SelectValue placeholder="Codigo y Norma" />
@@ -284,10 +331,18 @@ export const Solicitud = ({ type }) => {
 
             <div>
                 <Label htmlFor="">Descripción</Label>
-                <Textarea placeholder="Descripción del servicio solicitado o falla a reparar:" />
+                <Textarea
+                    placeholder="Descripción del servicio solicitado o falla a reparar:"
+                    value={data.descripcion}
+                    onChange={(e) => setData("descripcion", e.target.value)}
+
+                    disabled={type=='view'}
+                />
             </div>
 
-            <PrimaryButton className="mt-1">Enviar</PrimaryButton>
+            {type != "view" && (
+                <PrimaryButton className="mt-3">Enviar</PrimaryButton>
+            )}
         </form>
     );
 };

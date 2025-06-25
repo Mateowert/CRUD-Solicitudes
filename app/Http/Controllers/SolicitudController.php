@@ -14,7 +14,8 @@ class SolicitudController extends Controller
 {
     protected $solicitud;
 
-    public function __construct(Solicitud $solicitud){
+    public function __construct(Solicitud $solicitud)
+    {
         $this->solicitud = $solicitud;
     }
 
@@ -46,14 +47,18 @@ class SolicitudController extends Controller
     public function store(Request $request)
     {
         //
+        $this->solicitud->storeSolicitud($request);
+        return redirect()->route('solicitud.index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Solicitud $solicitud)
+    public function show($id_solicitud)
     {
         //
+        $solicitudEncontrada = $this->solicitud->getSolicitud($id_solicitud);
+        return response()->json(['solicitud'=>$solicitudEncontrada]);
     }
 
     /**
@@ -78,5 +83,7 @@ class SolicitudController extends Controller
     public function destroy(Solicitud $solicitud)
     {
         //
+        $solicitud->delete();
+        return redirect()->route('solicitud.index');
     }
 }
