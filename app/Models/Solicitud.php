@@ -24,7 +24,9 @@ class Solicitud extends Model
 	    INNER JOIN departamentos d2 
     	    ON dt.FK_Departamento = d2.id
         INNER JOIN trabajadores t 
-    	    ON dt.FK_Trabajador = t.id";
+    	    ON dt.FK_Trabajador = t.id
+            ORDER BY s.fecha_elaboracion desc;
+            ";
         $solicitudes = DB::select($query);
 
         if (count($solicitudes) > 0) {
@@ -85,6 +87,7 @@ class Solicitud extends Model
             inner join departamentos__trabajadores dt 
                 on s.FK_Departamento_solicitante = dt.id
             where s.id = ?
+            
         ";
         return DB::select($query, [$id_solicitud])[0];
     }
@@ -103,6 +106,7 @@ class Solicitud extends Model
 	            fecha_elaboracion = ?,
 	            fecha_revision = ?
 	        where id= ?
+            
         ";
         return DB::update($query, [
             $request->fk_id_solicitante,

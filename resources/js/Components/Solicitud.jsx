@@ -1,6 +1,6 @@
 import { useForm } from "@inertiajs/react";
 import { useEffect, useState } from "react";
-import InputError from '@/Components/InputError';
+import InputError from "@/Components/InputError";
 
 import {
     Select,
@@ -13,10 +13,10 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner"
 
-import PrimaryButton from "@/Components/PrimaryButton";
-
-export const Solicitud = ({ type, id_solicitud }) => {
+export const Solicitud = ({ type, id_solicitud, setOpen }) => {
     const { data, setData, post, reset, errors, patch } = useForm({
         fk_id_trabajador: "",
         fk_id_solicitante: "",
@@ -122,13 +122,14 @@ export const Solicitud = ({ type, id_solicitud }) => {
         }
     };
 
-    function handleSubmit(e) {
+    const handleSubmit = (e) => {
         e.preventDefault();
 
         if (type == "edit" && id_solicitud) {
             patch(route("solicitud.update", id_solicitud), {
                 onSuccess: () => {
-                    reset();
+                    setOpen(false);
+                    toast("Editado con exito")
                 },
             });
             return;
@@ -137,15 +138,17 @@ export const Solicitud = ({ type, id_solicitud }) => {
         post(route("solicitud.store"), {
             onSuccess: () => {
                 reset();
+                setOpen(false);
+                toast("Creado con exito")
             },
             onError: () => {
                 console.log(errors);
             },
         });
-    }
+    };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} id="form_solicitud">
             <div className="grid grid-cols-1 gap-2">
                 <div className="">
                     <Label htmlFor={"select_solicitante"}>
@@ -171,7 +174,9 @@ export const Solicitud = ({ type, id_solicitud }) => {
                             ))}
                         </SelectContent>
                     </Select>
-                    {errors.fk_id_solicitante && <InputError message={errors.fk_id_solicitante} />}
+                    {errors.fk_id_solicitante && (
+                        <InputError message={errors.fk_id_solicitante} />
+                    )}
                 </div>
 
                 <div>
@@ -198,7 +203,9 @@ export const Solicitud = ({ type, id_solicitud }) => {
                             })}
                         </SelectContent>
                     </Select>
-                    {errors.fk_id_solicitado && <InputError message={errors.fk_id_solicitado} />}
+                    {errors.fk_id_solicitado && (
+                        <InputError message={errors.fk_id_solicitado} />
+                    )}
                 </div>
 
                 <div>
@@ -225,7 +232,9 @@ export const Solicitud = ({ type, id_solicitud }) => {
                             })}
                         </SelectContent>
                     </Select>
-                    {errors.fk_id_trabajador && <InputError message={errors.fk_id_trabajador} />}
+                    {errors.fk_id_trabajador && (
+                        <InputError message={errors.fk_id_trabajador} />
+                    )}
                 </div>
 
                 <div>
@@ -264,7 +273,9 @@ export const Solicitud = ({ type, id_solicitud }) => {
                             })}
                         </SelectContent>
                     </Select>
-                    {errors.fk_id_tipo&& <InputError message={errors.fk_id_tipo} />}
+                    {errors.fk_id_tipo && (
+                        <InputError message={errors.fk_id_tipo} />
+                    )}
                 </div>
 
                 <div>
@@ -280,7 +291,9 @@ export const Solicitud = ({ type, id_solicitud }) => {
                         }
                         disabled={type == "view"}
                     />
-                    {errors.fecha_elaboracion && <InputError message={errors.fecha_elaboracion} />}
+                    {errors.fecha_elaboracion && (
+                        <InputError message={errors.fecha_elaboracion} />
+                    )}
                 </div>
 
                 <div>
@@ -296,7 +309,9 @@ export const Solicitud = ({ type, id_solicitud }) => {
                         }
                         disabled={type == "view"}
                     />
-                    {errors.fecha_revision && <InputError message={errors.fecha_revision} />}
+                    {errors.fecha_revision && (
+                        <InputError message={errors.fecha_revision} />
+                    )}
                 </div>
 
                 <div>
@@ -308,12 +323,16 @@ export const Solicitud = ({ type, id_solicitud }) => {
                         onChange={(e) => setData("descripcion", e.target.value)}
                         disabled={type == "view"}
                     />
-                    {errors.descripcion && <InputError message={errors.descripcion} />}
+                    {errors.descripcion && (
+                        <InputError message={errors.descripcion} />
+                    )}
                 </div>
             </div>
 
             {type != "view" && (
-                <PrimaryButton className="mt-3">Enviar</PrimaryButton>
+                <Button className="mt-3" type="submit">
+                    Enviar
+                </Button>
             )}
         </form>
     );
