@@ -1,5 +1,6 @@
 import { useForm } from "@inertiajs/react";
 import { useEffect, useState } from "react";
+import InputError from '@/Components/InputError';
 
 import {
     Select,
@@ -129,7 +130,6 @@ export const Solicitud = ({ type, id_solicitud }) => {
                 onSuccess: () => {
                     reset();
                 },
-                onFinish: () => console.log("si se actualizo"),
             });
             return;
         }
@@ -137,10 +137,9 @@ export const Solicitud = ({ type, id_solicitud }) => {
         post(route("solicitud.store"), {
             onSuccess: () => {
                 reset();
-                console.log("se guardo");
             },
             onError: () => {
-                console.log("algo trono guardando");
+                console.log(errors);
             },
         });
     }
@@ -172,6 +171,7 @@ export const Solicitud = ({ type, id_solicitud }) => {
                             ))}
                         </SelectContent>
                     </Select>
+                    {errors.fk_id_solicitante && <InputError message={errors.fk_id_solicitante} />}
                 </div>
 
                 <div>
@@ -198,6 +198,7 @@ export const Solicitud = ({ type, id_solicitud }) => {
                             })}
                         </SelectContent>
                     </Select>
+                    {errors.fk_id_solicitado && <InputError message={errors.fk_id_solicitado} />}
                 </div>
 
                 <div>
@@ -224,6 +225,7 @@ export const Solicitud = ({ type, id_solicitud }) => {
                             })}
                         </SelectContent>
                     </Select>
+                    {errors.fk_id_trabajador && <InputError message={errors.fk_id_trabajador} />}
                 </div>
 
                 <div>
@@ -235,6 +237,7 @@ export const Solicitud = ({ type, id_solicitud }) => {
                         onChange={(e) => setData("folio", e.target.value)}
                         disabled={type == "view"}
                     />
+                    {errors.folio && <InputError message={errors.folio} />}
                 </div>
 
                 <div>
@@ -261,6 +264,7 @@ export const Solicitud = ({ type, id_solicitud }) => {
                             })}
                         </SelectContent>
                     </Select>
+                    {errors.fk_id_tipo&& <InputError message={errors.fk_id_tipo} />}
                 </div>
 
                 <div>
@@ -276,6 +280,7 @@ export const Solicitud = ({ type, id_solicitud }) => {
                         }
                         disabled={type == "view"}
                     />
+                    {errors.fecha_elaboracion && <InputError message={errors.fecha_elaboracion} />}
                 </div>
 
                 <div>
@@ -291,6 +296,7 @@ export const Solicitud = ({ type, id_solicitud }) => {
                         }
                         disabled={type == "view"}
                     />
+                    {errors.fecha_revision && <InputError message={errors.fecha_revision} />}
                 </div>
 
                 <div>
@@ -302,6 +308,7 @@ export const Solicitud = ({ type, id_solicitud }) => {
                         onChange={(e) => setData("descripcion", e.target.value)}
                         disabled={type == "view"}
                     />
+                    {errors.descripcion && <InputError message={errors.descripcion} />}
                 </div>
             </div>
 

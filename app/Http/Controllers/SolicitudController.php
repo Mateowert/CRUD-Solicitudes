@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SolicitudesRequest;
 use App\Models\Solicitud;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -44,7 +45,7 @@ class SolicitudController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SolicitudesRequest $request)
     {
         //
         $this->solicitud->storeSolicitud($request);
@@ -58,7 +59,7 @@ class SolicitudController extends Controller
     {
         //
         $solicitudEncontrada = $this->solicitud->getSolicitud($id_solicitud);
-        return response()->json(['solicitud'=>$solicitudEncontrada]);
+        return response()->json(['solicitud' => $solicitudEncontrada]);
     }
 
     /**
@@ -72,7 +73,7 @@ class SolicitudController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id_solicitud)
+    public function update(SolicitudesRequest $request, $id_solicitud)
     {
         //
         $this->solicitud->updateSolicitud($request, $id_solicitud);
