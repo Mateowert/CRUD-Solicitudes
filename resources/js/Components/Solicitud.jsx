@@ -297,24 +297,6 @@ export const Solicitud = ({ type, id_solicitud, setOpen }) => {
                 </div>
 
                 <div>
-                    <Label htmlFor={"fecha_revision"} className="mr-4">
-                        Fecha de Revisión:
-                    </Label>
-                    <Input
-                        id="fecha_revision"
-                        type="date"
-                        value={data.fecha_revision}
-                        onChange={(e) =>
-                            setData("fecha_revision", e.target.value)
-                        }
-                        disabled={type == "view"}
-                    />
-                    {errors.fecha_revision && (
-                        <InputError message={errors.fecha_revision} />
-                    )}
-                </div>
-
-                <div>
                     <Label htmlFor="descripcion">Descripción</Label>
                     <Textarea
                         id="descripcion"

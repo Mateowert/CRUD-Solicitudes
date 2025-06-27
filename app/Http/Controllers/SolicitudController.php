@@ -77,7 +77,7 @@ class SolicitudController extends Controller
     {
         //
         $this->solicitud->updateSolicitud($request, $id_solicitud);
-        
+        return redirect()->route('solicitud.index');
     }
 
     /**

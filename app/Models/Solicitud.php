@@ -45,7 +45,6 @@ class Solicitud extends Model
 	        FK_Tipo_solicitud ,
 	        descripcion, 
 	        folio,
-	        fecha_revision,
 	        fecha_elaboracion)
 	    VALUES 
 	        (
@@ -54,7 +53,6 @@ class Solicitud extends Model
 	        ?, 
 	        ?,
 	        ?, 
-	        ?,
 	        ?,
 	        ?
 	        )
@@ -68,7 +66,6 @@ class Solicitud extends Model
             $request->fk_id_tipo,
             $request->descripcion,
             $request->folio,
-            $request->fecha_revision,
             $request->fecha_elaboracion,
         ]);
     }
@@ -81,7 +78,6 @@ class Solicitud extends Model
             s.folio,
             s.FK_Tipo_solicitud,
             s.fecha_elaboracion,
-            s.fecha_revision,
             s.descripcion
             from solicituds s
             inner join departamentos__trabajadores dt 
@@ -103,8 +99,7 @@ class Solicitud extends Model
 	            FK_Tipo_solicitud = ?,
 	            folio = ?,
 	            descripcion = ?,
-	            fecha_elaboracion = ?,
-	            fecha_revision = ?
+	            fecha_elaboracion = ?
 	        where id= ?
             
         ";
@@ -116,7 +111,6 @@ class Solicitud extends Model
             $request->folio,
             $request->descripcion,
             $request->fecha_elaboracion,
-            $request->fecha_revision,
             $id_solicitud
         ]);
     }

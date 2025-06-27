@@ -26,7 +26,6 @@ class SolicitudesRequest extends FormRequest
             'fk_id_solicitante' => ['required'],
             'fk_id_solicitado' => ['required'],
             'fecha_elaboracion' => ['required'],
-            'fecha_revision' => ['required'],
             'folio' => ['required'],
             'descripcion' => ['required'],
             'fk_id_tipo' => ['required']
@@ -41,7 +40,6 @@ class SolicitudesRequest extends FormRequest
             'folio'=> 'Introduce el folio',
             'fk_id_tipo'=> 'Selecciona una norma',
             'fecha_elaboracion' => 'Introduce la fecha de elaboracion',
-            'fecha_revision' => 'Introduce la fecha de revision',
             'descripcion'=> 'Introduce la descripcion de la solicitud',
         ];
     }
