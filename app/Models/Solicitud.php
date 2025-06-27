@@ -14,7 +14,7 @@ class Solicitud extends Model
         $query = "SELECT d1.nombre_departamento as solicitado, 
 	   d2.nombre_departamento as solicitante,
 	   t.nombre,
-	   s.fecha_elaboracion,
+	   strftime('%d/%m/%Y', s.fecha_elaboracion) as fecha_elaboracion,
        s.id 
 	   FROM solicituds s
         INNER JOIN departamentos d1 

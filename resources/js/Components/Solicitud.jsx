@@ -125,6 +125,11 @@ export const Solicitud = ({ type, id_solicitud, setOpen }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        if (type == "view"){
+            alert("codigo de view")
+            return
+        }
+
         if (type == "edit" && id_solicitud) {
             patch(route("solicitud.update", id_solicitud), {
                 onSuccess: () => {
@@ -316,6 +321,13 @@ export const Solicitud = ({ type, id_solicitud, setOpen }) => {
                     Enviar
                 </Button>
             )}
+
+            {type == "view" && (
+                <Button className="mt-3">
+                    PDF
+                </Button>
+            )           
+            }
         </form>
     );
 };
