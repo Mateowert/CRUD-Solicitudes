@@ -44,56 +44,58 @@ import { SolicitudColumna } from "@/Components/SolicitudColumna";
 const IndexSolicitudes = ({ solicitudes }) => {
     const [dialogCrear, setDialogCrear] = useState(false);
     return (
-        <>
-            <Toaster position="top-center" />
+        <div className="w-full flex items-center justify-center">
+            <div className="w-[80vw] space-y-4">
+                <Toaster position="top-center" />
 
-            <h1 className="text-center text-4xl font-extrabold text-blue-600 mt-8 mb-4">
-                Solicitudes
-            </h1>
+                <h1 className="text-center text-4xl font-extrabold text-blue-600">
+                    Solicitudes
+                </h1>
 
-            <div className="ml-20 mr-20">
-                <div className="flex justify-end mb-5">
-                    <Dialog open={dialogCrear} onOpenChange={setDialogCrear}>
-                        <DialogTrigger>
-                            <span className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded shadow">
-                                + Crear
-                            </span>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogTitle>Crear Solicitud</DialogTitle>
-                            <DialogDescription>
-                                Crea una nueva solicitud
-                            </DialogDescription>
-                            <Solicitud type="create" setOpen={setDialogCrear}/>
-                        </DialogContent>
-                    </Dialog>
+                <div>
+                    <div className="flex justify-end">
+                        <Dialog open={dialogCrear} onOpenChange={setDialogCrear}>
+                            <DialogTrigger>
+                                <span className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded shadow">
+                                    + Crear
+                                </span>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogTitle>Crear Solicitud</DialogTitle>
+                                <DialogDescription>
+                                    Crea una nueva solicitud
+                                </DialogDescription>
+                                <Solicitud type="create" setOpen={setDialogCrear}/>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
+
+                    <Table>
+                        <TableCaption>Listado de Solicitudes</TableCaption>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Solicitado</TableHead>
+                                <TableHead>Solicitante</TableHead>
+                                <TableHead>Nombre Solicitante</TableHead>
+                                <TableHead className="w-[200px]">
+                                    Fecha de Elaboración
+                                </TableHead>
+                                <TableHead className="w-[300px]">
+                                    Acciones
+                                </TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {solicitudes.map((item) => {
+                                return (
+                                    <SolicitudColumna key={item.id} item={item} />
+                                );
+                            })}
+                        </TableBody>
+                    </Table>
                 </div>
-
-                <Table>
-                    <TableCaption>Listado de Solicitudes</TableCaption>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Solicitado</TableHead>
-                            <TableHead>Solicitante</TableHead>
-                            <TableHead>Nombre Solicitante</TableHead>
-                            <TableHead className="w-[200px]">
-                                Fecha de Elaboración
-                            </TableHead>
-                            <TableHead className="w-[300px]">
-                                Acciones
-                            </TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {solicitudes.map((item) => {
-                            return (
-                                <SolicitudColumna key={item.id} item={item} />
-                            );
-                        })}
-                    </TableBody>
-                </Table>
             </div>
-        </>
+        </div>
     );
 };
 

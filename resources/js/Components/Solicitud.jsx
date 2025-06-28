@@ -163,7 +163,11 @@ export const Solicitud = ({ type, id_solicitud, setOpen }) => {
 
     return (
         <>
-            {isLoading && <Loader />}
+            {isLoading && (
+                <div className="fixed items-center justify-center ml-60 mt-20">
+                    <Loader />
+                </div>
+            )}
             <form onSubmit={handleSubmit} id="form_solicitud">
                 <div className="grid grid-cols-1 gap-2">
                     <div className="">
