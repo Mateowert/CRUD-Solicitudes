@@ -14,7 +14,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner"
+import { toast } from "sonner";
+
+import Loader from "@/components/ui/loader";
 
 export const Solicitud = ({ type, id_solicitud, setOpen }) => {
     const { data, setData, post, reset, errors, patch } = useForm({
@@ -27,6 +29,8 @@ export const Solicitud = ({ type, id_solicitud, setOpen }) => {
         descripcion: "",
         fk_id_tipo: "",
     });
+
+    const [isLoading, setIsLoading] = useState(false);
 
     //tipo: codigo y norma
     const [tipos, setTipos] = useState([]);
@@ -105,7 +109,10 @@ export const Solicitud = ({ type, id_solicitud, setOpen }) => {
 
     const fetchSolicitud = async () => {
         if (!id_solicitud) return;
+
         try {
+            setIsLoading(true);
+
             const response = await fetch(`solicitud/${id_solicitud}`);
             const { solicitud } = await response.json();
             setSolicitud(solicitud);
@@ -120,21 +127,23 @@ export const Solicitud = ({ type, id_solicitud, setOpen }) => {
         } catch (error) {
             console.log("error", error);
         }
+
+        setIsLoading(false);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (type == "view"){
-            alert("codigo de view")
-            return
+        if (type == "view") {
+            alert("codigo de view");
+            return;
         }
 
         if (type == "edit" && id_solicitud) {
             patch(route("solicitud.update", id_solicitud), {
                 onSuccess: () => {
                     setOpen(false);
-                    toast("Editado con exito")
+                    toast("Editado con exito");
                 },
             });
             return;
@@ -144,7 +153,7 @@ export const Solicitud = ({ type, id_solicitud, setOpen }) => {
             onSuccess: () => {
                 reset();
                 setOpen(false);
-                toast("Creado con exito")
+                toast("Creado con exito");
             },
             onError: () => {
                 console.log(errors);
@@ -153,181 +162,191 @@ export const Solicitud = ({ type, id_solicitud, setOpen }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} id="form_solicitud">
-            <div className="grid grid-cols-1 gap-2">
-                <div className="">
-                    <Label htmlFor={"select_solicitante"}>
-                        Area Solicitante
-                    </Label>
-                    <Select
-                        id="select_solicitante"
-                        value={data.fk_id_solicitante}
-                        onValueChange={(e) => setData("fk_id_solicitante", e)}
-                        disabled={(solicitantes.length == 0) | (type == "view")}
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Solicitante" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {solicitantes.map((departamento) => (
-                                <SelectItem
-                                    key={departamento.id}
-                                    value={departamento.id.toString()}
-                                >
-                                    {departamento.nombre_departamento}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    {errors.fk_id_solicitante && (
-                        <InputError message={errors.fk_id_solicitante} />
-                    )}
-                </div>
-
-                <div>
-                    <Label htmlFor={"select_solicitado"}>Area Solicitada</Label>
-                    <Select
-                        id="select_solicitado"
-                        value={data.fk_id_solicitado}
-                        onValueChange={(e) => setData("fk_id_solicitado", e)}
-                        disabled={!solicitables.length || type == "view"}
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Solicitado" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {solicitables.map((departamento) => {
-                                return (
+        <>
+            {isLoading && <Loader />}
+            <form onSubmit={handleSubmit} id="form_solicitud">
+                <div className="grid grid-cols-1 gap-2">
+                    <div className="">
+                        <Label htmlFor={"select_solicitante"}>
+                            Area Solicitante
+                        </Label>
+                        <Select
+                            id="select_solicitante"
+                            value={data.fk_id_solicitante}
+                            onValueChange={(e) =>
+                                setData("fk_id_solicitante", e)
+                            }
+                            disabled={
+                                (solicitantes.length == 0) | (type == "view")
+                            }
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Solicitante" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {solicitantes.map((departamento) => (
                                     <SelectItem
                                         key={departamento.id}
                                         value={departamento.id.toString()}
                                     >
                                         {departamento.nombre_departamento}
                                     </SelectItem>
-                                );
-                            })}
-                        </SelectContent>
-                    </Select>
-                    {errors.fk_id_solicitado && (
-                        <InputError message={errors.fk_id_solicitado} />
-                    )}
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {errors.fk_id_solicitante && (
+                            <InputError message={errors.fk_id_solicitante} />
+                        )}
+                    </div>
+
+                    <div>
+                        <Label htmlFor={"select_solicitado"}>
+                            Area Solicitada
+                        </Label>
+                        <Select
+                            id="select_solicitado"
+                            value={data.fk_id_solicitado}
+                            onValueChange={(e) =>
+                                setData("fk_id_solicitado", e)
+                            }
+                            disabled={!solicitables.length || type == "view"}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Solicitado" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {solicitables.map((departamento) => {
+                                    return (
+                                        <SelectItem
+                                            key={departamento.id}
+                                            value={departamento.id.toString()}
+                                        >
+                                            {departamento.nombre_departamento}
+                                        </SelectItem>
+                                    );
+                                })}
+                            </SelectContent>
+                        </Select>
+                        {errors.fk_id_solicitado && (
+                            <InputError message={errors.fk_id_solicitado} />
+                        )}
+                    </div>
+
+                    <div>
+                        <Label htmlFor={"select_trabajador"}>Trabajador</Label>
+                        <Select
+                            id="select_trabajador"
+                            value={data.fk_id_trabajador}
+                            onValueChange={(e) =>
+                                setData("fk_id_trabajador", e)
+                            }
+                            disabled={!trabajadores.length || type == "view"}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Trabajador" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {trabajadores.map((trabajador) => {
+                                    return (
+                                        <SelectItem
+                                            key={trabajador.id}
+                                            value={trabajador.id.toString()}
+                                        >
+                                            {trabajador.nombre}
+                                        </SelectItem>
+                                    );
+                                })}
+                            </SelectContent>
+                        </Select>
+                        {errors.fk_id_trabajador && (
+                            <InputError message={errors.fk_id_trabajador} />
+                        )}
+                    </div>
+
+                    <div>
+                        <Label htmlFor={"folio"}>Folio</Label>
+                        <Input
+                            id="folio"
+                            placeholder="Folio"
+                            value={data.folio}
+                            onChange={(e) => setData("folio", e.target.value)}
+                            disabled={type == "view"}
+                        />
+                        {errors.folio && <InputError message={errors.folio} />}
+                    </div>
+
+                    <div>
+                        <Label htmlFor={"select_norma"}>Codigo y Norma</Label>
+                        <Select
+                            id="select_norma"
+                            value={data.fk_id_tipo}
+                            onValueChange={(e) => setData("fk_id_tipo", e)}
+                            disabled={!tipos.length | (type == "view")}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Codigo y Norma" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {tipos.map((tipo) => {
+                                    return (
+                                        <SelectItem
+                                            key={tipo.id}
+                                            value={tipo.id.toString()}
+                                        >
+                                            {tipo.codigo}
+                                        </SelectItem>
+                                    );
+                                })}
+                            </SelectContent>
+                        </Select>
+                        {errors.fk_id_tipo && (
+                            <InputError message={errors.fk_id_tipo} />
+                        )}
+                    </div>
+
+                    <div>
+                        <Label htmlFor={"fecha_elaboracion"} className="mr-4">
+                            Fecha de Elaboración:
+                        </Label>
+                        <Input
+                            id="fecha_elaboracion"
+                            type="date"
+                            value={data.fecha_elaboracion}
+                            onChange={(e) =>
+                                setData("fecha_elaboracion", e.target.value)
+                            }
+                            disabled={type == "view"}
+                        />
+                        {errors.fecha_elaboracion && (
+                            <InputError message={errors.fecha_elaboracion} />
+                        )}
+                    </div>
+
+                    <div>
+                        <Label htmlFor="descripcion">Descripción</Label>
+                        <Textarea
+                            id="descripcion"
+                            placeholder="Descripción del servicio solicitado o falla a reparar:"
+                            value={data.descripcion}
+                            onChange={(e) =>
+                                setData("descripcion", e.target.value)
+                            }
+                            disabled={type == "view"}
+                        />
+                        {errors.descripcion && (
+                            <InputError message={errors.descripcion} />
+                        )}
+                    </div>
                 </div>
 
-                <div>
-                    <Label htmlFor={"select_trabajador"}>Trabajador</Label>
-                    <Select
-                        id="select_trabajador"
-                        value={data.fk_id_trabajador}
-                        onValueChange={(e) => setData("fk_id_trabajador", e)}
-                        disabled={!trabajadores.length || type == "view"}
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Trabajador" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {trabajadores.map((trabajador) => {
-                                return (
-                                    <SelectItem
-                                        key={trabajador.id}
-                                        value={trabajador.id.toString()}
-                                    >
-                                        {trabajador.nombre}
-                                    </SelectItem>
-                                );
-                            })}
-                        </SelectContent>
-                    </Select>
-                    {errors.fk_id_trabajador && (
-                        <InputError message={errors.fk_id_trabajador} />
-                    )}
-                </div>
+                {type != "view" && (
+                    <Button className="mt-3" type="submit">
+                        Enviar
+                    </Button>
+                )}
 
-                <div>
-                    <Label htmlFor={"folio"}>Folio</Label>
-                    <Input
-                        id="folio"
-                        placeholder="Folio"
-                        value={data.folio}
-                        onChange={(e) => setData("folio", e.target.value)}
-                        disabled={type == "view"}
-                    />
-                    {errors.folio && <InputError message={errors.folio} />}
-                </div>
-
-                <div>
-                    <Label htmlFor={"select_norma"}>Codigo y Norma</Label>
-                    <Select
-                        id="select_norma"
-                        value={data.fk_id_tipo}
-                        onValueChange={(e) => setData("fk_id_tipo", e)}
-                        disabled={!tipos.length | (type == "view")}
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Codigo y Norma" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {tipos.map((tipo) => {
-                                return (
-                                    <SelectItem
-                                        key={tipo.id}
-                                        value={tipo.id.toString()}
-                                    >
-                                        {tipo.codigo}
-                                    </SelectItem>
-                                );
-                            })}
-                        </SelectContent>
-                    </Select>
-                    {errors.fk_id_tipo && (
-                        <InputError message={errors.fk_id_tipo} />
-                    )}
-                </div>
-
-                <div>
-                    <Label htmlFor={"fecha_elaboracion"} className="mr-4">
-                        Fecha de Elaboración:
-                    </Label>
-                    <Input
-                        id="fecha_elaboracion"
-                        type="date"
-                        value={data.fecha_elaboracion}
-                        onChange={(e) =>
-                            setData("fecha_elaboracion", e.target.value)
-                        }
-                        disabled={type == "view"}
-                    />
-                    {errors.fecha_elaboracion && (
-                        <InputError message={errors.fecha_elaboracion} />
-                    )}
-                </div>
-
-                <div>
-                    <Label htmlFor="descripcion">Descripción</Label>
-                    <Textarea
-                        id="descripcion"
-                        placeholder="Descripción del servicio solicitado o falla a reparar:"
-                        value={data.descripcion}
-                        onChange={(e) => setData("descripcion", e.target.value)}
-                        disabled={type == "view"}
-                    />
-                    {errors.descripcion && (
-                        <InputError message={errors.descripcion} />
-                    )}
-                </div>
-            </div>
-
-            {type != "view" && (
-                <Button className="mt-3" type="submit">
-                    Enviar
-                </Button>
-            )}
-
-            {type == "view" && (
-                <Button className="mt-3">
-                    PDF
-                </Button>
-            )           
-            }
-        </form>
+                {type == "view" && <Button className="mt-3">PDF</Button>}
+            </form>
+        </>
     );
 };
