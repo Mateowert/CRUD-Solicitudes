@@ -11,4 +11,12 @@ export default defineConfig({
         }),
         react(),
     ],
+    optimizeDeps: {//-------------- Solo necesario quitar para depuracion profunda o al trabajar en librerias
+        esbuildOptions: {
+            sourcemap: false
+        }
+    },
+    build: {
+        sourcemap: false
+    }//--quita warnings de consola en el mapeo
 });
