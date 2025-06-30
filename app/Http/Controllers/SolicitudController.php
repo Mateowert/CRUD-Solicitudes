@@ -7,9 +7,7 @@ use App\Models\Solicitud;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-use App\Models\Departamentos;
-use App\Models\Departamentos_Trabajadores;
-use App\Http\Resources\TrabajadoresResource;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SolicitudController extends Controller
 {
@@ -88,5 +86,13 @@ class SolicitudController extends Controller
         //
         $solicitud->delete();
         return redirect()->route('solicitud.index');
+    }
+
+    public function getSolicitudPDF(Request $request){
+        $solicitudEncontrada = $this->solicitud->getSolicitud($request->id);
+
+        $pdf = PDF::loadView('solicitud', []);        
+
+        return $pdf->download();
     }
 }

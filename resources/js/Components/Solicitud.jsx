@@ -131,11 +131,43 @@ export const Solicitud = ({ type, id_solicitud, setOpen }) => {
         setIsLoading(false);
     };
 
+    function openPostRoute(url, data) {
+        const form = new FormData();
+
+        const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            .getAttribute("content");
+        form.append("_token", csrfToken);
+
+        for (const key in data) {
+            form.append(key, data[key]);
+        }
+
+        const newWindow = window.open("", "_blank");
+
+        fetch(url, {
+            method: "POST",
+            body: form,
+        })
+            .then((response) => response.blob())
+            .then((blob) => {
+                const bloUrl = URL.createObjectURL(blob);
+                newWindow.location.href = blobUrl;
+            })
+            .catch((error) => {
+                toast({
+                    description: "Ocurrio un error al imprimir el documento",
+                    variant: "destructive",
+                });
+                newWindow.close();
+            });
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
         if (type == "view") {
-            alert("codigo de view");
+            openPostRoute("api/getSolicitudPDF", { id: id_solicitud });
             return;
         }
 
