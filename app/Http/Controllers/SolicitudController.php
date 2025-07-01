@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SolicitudesRequest;
+use App\Models\Departamentos;
+use App\Models\Departamentos_Trabajadores;
 use App\Models\Solicitud;
+use App\Models\Tipo_solicitud;
+use App\Models\Trabajadores;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,10 +16,12 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class SolicitudController extends Controller
 {
     protected $solicitud;
+    protected $departamento;
 
-    public function __construct(Solicitud $solicitud)
+    public function __construct(Solicitud $solicitud, Departamentos $departamento)
     {
         $this->solicitud = $solicitud;
+        $this->departamento = $departamento;
     }
 
     /**
@@ -88,10 +94,34 @@ class SolicitudController extends Controller
         return redirect()->route('solicitud.index');
     }
 
-    public function getSolicitudPDF(Request $request){
-        $solicitudEncontrada = $this->solicitud->getSolicitud($request->id);
+    public function getSolicitudPDF(Request $request)
+    {
+        $solicitud = Solicitud::find($request->id);
 
-        $pdf = PDF::loadView('solicitud', []);        
+        $departamentosSolicitables = $this->departamento->getSolicitables();
+        $tipo = Tipo_solicitud::find($solicitud->FK_Tipo_solicitud);
+        
+        $solicitante = Departamentos_Trabajadores::find($solicitud->FK_Departamento_solicitante);
+        $trabajador = Trabajadores::find($solicitante->FK_Trabajador);
+        $departamentoSolicitante = Departamentos::find($solicitante->FK_Departamento);
+        
+
+        $pdf = PDF::loadView('solicitud', [
+            'solicitud' => $solicitud,
+            'solicitables' => $departamentosSolicitables,
+            'tipo' => $tipo,
+            'trabajador' => $trabajador,
+            'solicitante' => $departamentoSolicitante,
+            'relSol' => $solicitante,
+        ]);
+        $pdf->setOptions([
+            'isRemoteEnabled' => true, // Para cargar imágenes de forma remota
+            'isHtml5ParserEnabled' => true, // Activar el analizador HTML5
+            'isPhpEnabled' => true, // Activar el soporte PHP para Dompdf
+            'enableCssFloat' => true,
+            'dpi' => 96,
+            'fontHeightRatio' => 0.9,
+        ]);
 
         return $pdf->download();
     }

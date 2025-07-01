@@ -38,7 +38,7 @@ import { Solicitud } from "@/Components/Solicitud";
 import { Link } from "@inertiajs/react";
 import { useState } from "react";
 
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner";
 import { SolicitudColumna } from "@/Components/SolicitudColumna";
 
 const IndexSolicitudes = ({ solicitudes }) => {
@@ -54,7 +54,10 @@ const IndexSolicitudes = ({ solicitudes }) => {
 
                 <div>
                     <div className="flex justify-end">
-                        <Dialog open={dialogCrear} onOpenChange={setDialogCrear}>
+                        <Dialog
+                            open={dialogCrear}
+                            onOpenChange={setDialogCrear}
+                        >
                             <DialogTrigger>
                                 <span className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded shadow">
                                     + Crear
@@ -65,7 +68,10 @@ const IndexSolicitudes = ({ solicitudes }) => {
                                 <DialogDescription>
                                     Crea una nueva solicitud
                                 </DialogDescription>
-                                <Solicitud type="create" setOpen={setDialogCrear}/>
+                                <Solicitud
+                                    type="create"
+                                    setOpen={setDialogCrear}
+                                />
                             </DialogContent>
                         </Dialog>
                     </div>
@@ -88,7 +94,10 @@ const IndexSolicitudes = ({ solicitudes }) => {
                         <TableBody>
                             {solicitudes.map((item) => {
                                 return (
-                                    <SolicitudColumna key={item.id} item={item} />
+                                    <SolicitudColumna
+                                        key={item.id}
+                                        item={item}
+                                    />
                                 );
                             })}
                         </TableBody>

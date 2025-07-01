@@ -15,7 +15,7 @@ Route::resource('solicitud', SolicitudController::class);
 Route::get('api/getDepartamentos', [DepartamentosController::class, 'index']);
 Route::get('api/getTipos', [TipoSolicitudController::class, 'index']);
 
-Route::get('api/getSolicitudPDF', [SolicitudController::class, 'getSolicitudPDF']);
+Route::post('api/getSolicitudPDF', [SolicitudController::class, 'getSolicitudPDF']);
 
 Route::get('/api/getTrabajadoresDepartamento/{id_departamento}', [DepartamentosTrabajadoresController::class, 'filter'])->name('trabajadores.departamento');
 

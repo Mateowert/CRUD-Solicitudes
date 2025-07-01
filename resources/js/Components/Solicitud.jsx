@@ -131,7 +131,7 @@ export const Solicitud = ({ type, id_solicitud, setOpen }) => {
         setIsLoading(false);
     };
 
-    function openPostRoute(url, data) {
+    function openGetRoute(url, data) {
         const form = new FormData();
 
         const csrfToken = document
@@ -151,7 +151,7 @@ export const Solicitud = ({ type, id_solicitud, setOpen }) => {
         })
             .then((response) => response.blob())
             .then((blob) => {
-                const bloUrl = URL.createObjectURL(blob);
+                const blobUrl = URL.createObjectURL(blob);
                 newWindow.location.href = blobUrl;
             })
             .catch((error) => {
@@ -167,7 +167,7 @@ export const Solicitud = ({ type, id_solicitud, setOpen }) => {
         e.preventDefault();
 
         if (type == "view") {
-            openPostRoute("api/getSolicitudPDF", { id: id_solicitud });
+            openGetRoute("api/getSolicitudPDF", {id: id_solicitud} );
             return;
         }
 
