@@ -17,11 +17,13 @@ class SolicitudController extends Controller
 {
     protected $solicitud;
     protected $departamento;
+    protected $tipo_solicitud;
 
-    public function __construct(Solicitud $solicitud, Departamentos $departamento)
+    public function __construct(Solicitud $solicitud, Departamentos $departamento, Tipo_solicitud $tipo_solicitud)
     {
         $this->solicitud = $solicitud;
         $this->departamento = $departamento;
+        $this->tipo_solicitud = $tipo_solicitud;
     }
 
     /**
@@ -96,10 +98,10 @@ class SolicitudController extends Controller
 
     public function getSolicitudPDF(Request $request)
     {
-        $solicitud = Solicitud::find($request->id);
+        $solicitud = $this->solicitud->getSolicitudPDF($request->id);//Solicitud::find($request->id);
 
         $departamentosSolicitables = $this->departamento->getSolicitables();
-        $tipo = Tipo_solicitud::find($solicitud->FK_Tipo_solicitud);
+        $tipo = $this->tipo_solicitud->getTipoSolicitud($solicitud->FK_Tipo_solicitud);
         
         $solicitante = Departamentos_Trabajadores::find($solicitud->FK_Departamento_solicitante);
         $trabajador = Trabajadores::find($solicitante->FK_Trabajador);

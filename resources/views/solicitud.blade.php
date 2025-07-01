@@ -157,7 +157,7 @@
                     echo <tr>
                             <td>{{$item->nombre_departamento}}</td>
                             <td>
-                                {{ dd($relSol) }}
+                                {{ $solicitud->FK_Departamento_solicitado==$item->id ? 'X' : '' }}
                             </td>
                         </tr>
                 @endforeach
@@ -168,7 +168,7 @@
 
     <div class="div-folio">
         <span class="folio">Folio: </span>
-        CC20251-115
+        {{ $solicitud->folio ? $solicitud->folio : 'Sin especificar' }}
     </div>
 
     <br><br>
@@ -176,7 +176,7 @@
     <table class="solicitante">
         <td>
             <span class="folio">Área Solicitante: </span>
-            {{ $solicitante->nombre_departamento }}
+            {{ $solicitante->nombre_departamento ? $solicitante->nombre_departamento : 'Sin especificar' }}
         </td>
     </table>
 
@@ -185,12 +185,12 @@
     <table class="datos">
         <tr class="marco">
             <td><span class="folio">Nombre y Firma del Solicitante: </span>
-                {{ $trabajador->nombre }}
+                {{ $trabajador->nombre ? $trabajador->nombre : 'Sin especificar' }}
             </td>
         </tr>
         <tr class="marco">
             <td><span class="folio">Fecha de Elaboración: </span>
-                {{ $solicitud->fecha_elaboracion }}
+                {{ $solicitud->fecha_elaboracion ? $solicitud->fecha_elaboracion : 'Sin especificar' }}
             </td>
         </tr>
         <tr class="marco">
@@ -198,7 +198,7 @@
         </tr>
         <tr class="marco">
             <td class="descripcion-ultimo">
-                {{ $solicitud->descripcion }}
+                {{ $solicitud->descripcion ? $solicitud->descripcion : 'Sin especificar' }}
             </td>
         </tr>
     </table>

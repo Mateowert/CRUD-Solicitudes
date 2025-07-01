@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Ramsey\Uuid\Guid\Guid;
 
 class Solicitud extends Model
 {
@@ -70,7 +71,8 @@ class Solicitud extends Model
         ]);
     }
 
-    public function getSolicitud($id_solicitud) {
+    public function getSolicitud($id_solicitud)
+    {
         $query = "
         select dt.FK_Departamento,
             s.FK_Departamento_solicitado,
@@ -88,7 +90,33 @@ class Solicitud extends Model
         return DB::select($query, [$id_solicitud])[0];
     }
 
-    public function updateSolicitud($request, $id_solicitud){
+    public function getSolicitudPDF($id_solicitud)
+    {
+        $query = "
+            SELECT strftime('%d', fecha_elaboracion ) || '/' ||
+  CASE strftime('%m', fecha_elaboracion )
+    WHEN '01' THEN 'ENERO'
+    WHEN '02' THEN 'FEBRERO'
+    WHEN '03' THEN 'MARZO'
+    WHEN '04' THEN 'ABRIL'
+    WHEN '05' THEN 'MAYO'
+    WHEN '06' THEN 'JUNIO'
+    WHEN '07' THEN 'JULIO'
+    WHEN '08' THEN 'AGOSTO'
+    WHEN '09' THEN 'SEPTIEMBRE'
+    WHEN '10' THEN 'OCTUBRE'
+    WHEN '11' THEN 'NOVIEMBRE'
+    WHEN '12' THEN 'DICIEMBRE'
+  END || '/' ||
+  strftime('%Y', fecha_elaboracion ) AS fecha_elaboracion, id, FK_Departamento_solicitante, 
+  FK_Departamento_solicitado, FK_Tipo_solicitud, folio, descripcion
+	FROM solicituds WHERE id = ?;
+        ";
+        return DB::select($query, [$id_solicitud])[0];
+    }
+
+    public function updateSolicitud($request, $id_solicitud)
+    {
         $query = "
             update solicituds
 	        set FK_Departamento_solicitante = (
